@@ -64,6 +64,7 @@ module imuldiv_IntMulIterativeDpath
 
   reg  [63:0] a_reg;       // Register for storing operand A
   reg  [31:0] b_reg;       // Register for storing operand B
+  reg  [63:0] result_reg;  // Register for storing result
   reg         val_reg;     // Register for storing valid bit
 
   always @( posedge clk ) begin
@@ -82,18 +83,45 @@ module imuldiv_IntMulIterativeDpath
   //----------------------------------------------------------------------
 
   // Extract sign bits
-
-  wire sign_bit_a = a_reg[31];
-  wire sign_bit_b = b_reg[31];
+  wire sign_bit_a = mulreq_msg_a[31];
+  wire sign_bit_b = mulreq_msg_b[31];
 
   // Unsign operands if necessary
 
-  wire [31:0] unsigned_a = ( sign_bit_a ) ? (~a_reg + 1'b1) : a_reg;
+  wire [63:0] unsigned_a = ( sign_bit_a ) ? (~a_reg + 1'b1) : a_reg;
   wire [31:0] unsigned_b = ( sign_bit_b ) ? (~b_reg + 1'b1) : b_reg;
 
-  // Computation logic
+  wire [63:0] a_out;
+  wire [31:0] b_out;
 
-  wire [63:0] unsigned_result = unsigned_a * unsigned_b;
+  shift_module #(
+    .dir(1), .W(64))
+    shift_module_a(
+      .unsigned_num(unsigned_a),
+      .sel(a_mux_sel),
+      .out(a_out)
+    );
+
+  shift_module #(
+    .dir(0), .W(32))
+    shift_module_b(
+      .unsigned_num(unsigned_b),
+      .sel(b_mux_sel),
+      .out(b_out)
+    );
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Determine whether or not result is signed. Usually the result is
   // signed if one and only one of the input operands is signed. In other
@@ -101,18 +129,14 @@ module imuldiv_IntMulIterativeDpath
   // operands is true. Remainder opeartions are a bit trickier, and here
   // we simply assume that the result is signed if the dividend for the
   // rem operation is signed.
-
   wire is_result_signed = sign_bit_a ^ sign_bit_b;
-
-  assign mulresp_msg_result
-    = ( is_result_signed ) ? (~unsigned_result + 1'b1) : unsigned_result;
+  assign mulresp_msg_result = ( is_result_signed ) ? (~result_reg + 1'b1) : result_reg;
 
   // Set the val/rdy signals. The request is ready when the response is
   // ready, and the response is valid when there is valid data in the
   // input registers.
-
-  assign mulreq_rdy  = mulresp_rdy;
-  assign mulresp_val = val_reg;
+  // assign mulreq_rdy  = mulresp_rdy;
+  // assign mulresp_val = val_reg;
 
 endmodule
 
@@ -123,6 +147,57 @@ endmodule
 module imuldiv_IntMulIterativeCtrl
 (
 );
+
+endmodule
+
+//------------------------------------------------------------------------
+// 2 Input Mux
+//------------------------------------------------------------------------
+
+module vc_Mux2 #( parameter W = 1 )
+(
+  input      [W-1:0] in0, in1,
+  input              sel,
+  output reg [W-1:0] out
+);
+
+  always @(*)
+  begin
+    case ( sel )
+      1'd0 : out = in0;
+      1'd1 : out = in1;
+      default : out = {W{1'bx}};
+    endcase
+  end
+
+endmodule
+
+module shift_module #(parameter dir = 0, parameter W = 1)
+(
+  input       [W-1:0] unsigned_num,
+  input               sel,
+  output reg  [W-1:0] out
+);
+
+  reg   [W-1:0] num_reg;
+  wire  [W-1:0] mux_in;
+  wire  [W-1:0] mux_out;
+
+  vc_Mux2 #(
+    .W(W))
+    mux(
+      .in0(unsigned_num),
+      .in1(mux_in),
+      .sel(sel),
+      .out(mux_out)
+    );
+
+  always @(*) begin
+    num_reg = mux_out;
+    out = num_reg;
+  end
+
+  assign mux_in = (dir) ? (num_reg << 1) : (num_reg >> 1);
 
 endmodule
 
