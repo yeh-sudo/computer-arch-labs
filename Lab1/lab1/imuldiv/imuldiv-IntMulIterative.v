@@ -76,6 +76,11 @@ module imuldiv_IntMulIterativeDpath
       val_reg <= mulreq_val;
     end
 
+    // assign mux output to reigster
+    a_reg <= a_out;
+    b_reg <= b_out;
+    result_reg <= result_mux_out;
+
   end
 
   //----------------------------------------------------------------------
@@ -110,18 +115,38 @@ module imuldiv_IntMulIterativeDpath
       .out(b_out)
     );
 
+  wire [63:0] result_mux_in;
+  wire [63:0] result_mux_out;
+  wire [63:0] result_reg_out;
+  wire [63:0] adder_out;
 
+  vc_Mux2 #(
+    .W(64))
+    result_mux(
+      .in0(64'b0),
+      .in1(result_mux_in),
+      .sel(result_mux_sel),
+      .out(result_mux_out)
+    );
 
+  assign result_reg_out = result_reg;
 
+  vc_Adder_simple #(
+    .W(64))
+    adder(
+      .in0(result_reg_out),
+      .in1(a_out),
+      .out(adder_out)
+    );
 
-
-
-
-
-
-
-
-
+  vc_Mux2 #(
+    .W(64))
+    adder_mux(
+      .in0(adder_out),
+      .in1(result_reg_out),
+      .sel(add_mux_sel),
+      .out(result_mux_in)
+    );
 
   // Determine whether or not result is signed. Usually the result is
   // signed if one and only one of the input operands is signed. In other
@@ -129,8 +154,27 @@ module imuldiv_IntMulIterativeDpath
   // operands is true. Remainder opeartions are a bit trickier, and here
   // we simply assume that the result is signed if the dividend for the
   // rem operation is signed.
-  wire is_result_signed = sign_bit_a ^ sign_bit_b;
-  assign mulresp_msg_result = ( is_result_signed ) ? (~result_reg + 1'b1) : result_reg;
+  wire [63:0] sign_in = ~result_reg_out + 1'b1;
+  vc_Mux2 #(
+    .W(64))
+    sign_mux(
+      .in0(sign_in),
+      .in1(result_reg_out),
+      .sel(sign_mux_sel),
+      .out(mulresp_msg_result)
+    );
+
+
+
+
+
+
+
+
+
+
+  // wire is_result_signed = sign_bit_a ^ sign_bit_b;
+  // assign mulresp_msg_result = ( is_result_signed ) ? (~result_reg + 1'b1) : result_reg;
 
   // Set the val/rdy signals. The request is ready when the response is
   // ready, and the response is valid when there is valid data in the
@@ -147,6 +191,40 @@ endmodule
 module imuldiv_IntMulIterativeCtrl
 (
 );
+
+endmodule
+
+
+
+//------------------------------------------------------------------------
+// Local Modules
+//------------------------------------------------------------------------
+
+//------------------------------------------------------------------------
+// Adder
+//------------------------------------------------------------------------
+
+module vc_Adder_simple #( parameter W = 1 )
+(
+  input  [W-1:0] in0, in1,
+  output [W-1:0] out
+);
+
+  assign out = in0 + in1;
+
+endmodule
+
+//------------------------------------------------------------------------
+// Subtractor
+//------------------------------------------------------------------------
+
+module vc_Subtractor #( parameter W = 1 )
+(
+  input  [W-1:0] in0, in1,
+  output [W-1:0] out
+);
+
+  assign out = in0 - in1;
 
 endmodule
 
@@ -171,6 +249,10 @@ module vc_Mux2 #( parameter W = 1 )
   end
 
 endmodule
+
+//------------------------------------------------------------------------
+// Shift Logic
+//------------------------------------------------------------------------
 
 module shift_module #(parameter dir = 0, parameter W = 1)
 (
@@ -198,6 +280,50 @@ module shift_module #(parameter dir = 0, parameter W = 1)
   end
 
   assign mux_in = (dir) ? (num_reg << 1) : (num_reg >> 1);
+
+endmodule
+
+//------------------------------------------------------------------------
+// Counter
+//------------------------------------------------------------------------
+
+module Counter
+(
+  input        clk,
+  input  [4:0] val,
+  input        b_mux_sel,
+  output [4:0] counter
+);
+
+  reg   [4:0] counter_reg;
+  wire  [4:0] counter_reg_out;
+  wire  [4:0] counter_mux_out;
+  wire  [4:0] sub_out;
+
+  always @(posedge clk) begin
+    counter_reg <= counter_mux_out;
+  end
+
+  assign counter_reg_out = counter_reg;
+
+  vc_Mux2 #(
+    .W(5))
+    counter_mux(
+      .in0(val),
+      .in1(sub_out),
+      .sel(b_mux_sel),
+      .out(counter_mux_out)
+    );
+
+  vc_Subtractor #(
+    .W(5))
+    subtractor(
+      .in0(counter_reg_out),
+      .in1(5'b00001),
+      .out(sub_out)
+    );
+
+  assign counter = counter_reg;
 
 endmodule
 
