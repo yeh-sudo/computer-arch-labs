@@ -110,8 +110,8 @@ module imuldiv_IntMulIterativeDpath
   reg  [63:0] result_reg;  // Register for storing result
   reg  [31:0] a_reg;
   reg  [31:0] b_reg;
-  reg sign_bit_a;
-  reg sign_bit_b;
+  reg         sign_bit_a;
+  reg         sign_bit_b;
 
   always @( posedge clk ) begin
     
@@ -149,7 +149,7 @@ module imuldiv_IntMulIterativeDpath
   // Unsign operands if necessary
 
   wire [31:0] unsigned_a_32 = ( mulreq_msg_a[31] ) ? (~mulreq_msg_a + 1'b1) : mulreq_msg_a;
-  wire [63:0] unsigned_a_64 = {32'd0, unsigned_a_32};
+  wire [63:0] unsigned_a_64 = {32'b0, unsigned_a_32};
   wire [31:0] unsigned_b = ( mulreq_msg_b[31] ) ? (~mulreq_msg_b + 1'b1) : mulreq_msg_b;
 
   wire [63:0] a_out;
@@ -328,8 +328,6 @@ module imuldiv_IntMulIterativeCtrl
         mulresp_val = 0;
       end
     endcase
-
-
   end
 
   assign sign_mux_sel = (sign) ? 0 : 1;
