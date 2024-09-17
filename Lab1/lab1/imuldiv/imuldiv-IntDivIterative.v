@@ -125,7 +125,6 @@ module imuldiv_IntDivIterativeDpath
 
     // Stall the pipeline if the response interface is not ready
     if ( reset ) begin
-      fn_reg  <= divreq_msg_fn;
       a_reg <= 0;
       b_reg <= 0;
       sign_bit_a <= 0;
@@ -138,6 +137,7 @@ module imuldiv_IntDivIterativeDpath
           sign_bit_b <= divreq_msg_b[31];
           b_reg <= {1'b0, unsigned_b_32, 32'b0};
           a_reg <= a_mux_out;
+          fn_reg <= divreq_msg_fn;
         end
         RUN: begin
           a_reg <= a_mux_out;
@@ -161,9 +161,9 @@ module imuldiv_IntDivIterativeDpath
   assign div_sign = sign_bit_a ^ sign_bit_b;
   assign rem_sign = sign_bit_a;
 
-  wire [31:0] unsigned_a_32 = (divreq_msg_a[31]) ? (~divreq_msg_a + 1'b1) : divreq_msg_a;
+  wire [31:0] unsigned_a_32 = (divreq_msg_a[31] & (divreq_msg_fn == `IMULDIV_DIVREQ_MSG_FUNC_SIGNED)) ? (~divreq_msg_a + 1'b1) : divreq_msg_a;
   wire [64:0] unsigned_a_65 = {33'b0, unsigned_a_32};
-  wire [31:0] unsigned_b_32 = (divreq_msg_b[31]) ? (~divreq_msg_b + 1'b1) : divreq_msg_b;
+  wire [31:0] unsigned_b_32 = (divreq_msg_b[31] & (divreq_msg_fn == `IMULDIV_DIVREQ_MSG_FUNC_SIGNED)) ? (~divreq_msg_b + 1'b1) : divreq_msg_b;
   wire [64:0] unsigned_b_65 = b_reg;
 
   wire [64:0] a_mux_out;
@@ -210,7 +210,7 @@ module imuldiv_IntDivIterativeDpath
     rem_mux(
       .in0(a_reg_w[63:32]),
       .in1(signed_rem),
-      .sel(rem_sign_mux_sel),
+      .sel(rem_sign_mux_sel & (fn_reg == `IMULDIV_DIVREQ_MSG_FUNC_SIGNED)),
       .out(rem_mux_out)
     );
 
@@ -219,7 +219,7 @@ module imuldiv_IntDivIterativeDpath
     res_mux(
       .in0(a_reg_w[31:0]),
       .in1(signed_res),
-      .sel(div_sign_mux_sel),
+      .sel(div_sign_mux_sel & (fn_reg == `IMULDIV_DIVREQ_MSG_FUNC_SIGNED)),
       .out(res_mux_out)
     );
     

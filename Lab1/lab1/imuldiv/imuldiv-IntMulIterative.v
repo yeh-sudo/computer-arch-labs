@@ -180,7 +180,7 @@ module imuldiv_IntMulIterativeDpath
   wire [63:0] result_reg_out;
   wire [63:0] adder_out;
 
-  Mux2 #(
+  mul_Mux2 #(
     .W(64))
     result_mux(
       .in0(64'b0),
@@ -191,7 +191,7 @@ module imuldiv_IntMulIterativeDpath
 
   assign result_reg_out = result_reg;
 
-  vc_Adder_simple #(
+  mul_Adder_simple #(
     .W(64))
     adder(
       .in0(result_reg_out),
@@ -199,7 +199,7 @@ module imuldiv_IntMulIterativeDpath
       .out(adder_out)
     );
 
-  Mux2 #(
+  mul_Mux2 #(
     .W(64))
     adder_mux(
       .in0(adder_out),
@@ -215,7 +215,7 @@ module imuldiv_IntMulIterativeDpath
   // we simply assume that the result is signed if the dividend for the
   // rem operation is signed.
   wire [63:0] sign_in = ~result_reg_out + 1'b1;
-  Mux2 #(
+  mul_Mux2 #(
     .W(64))
     sign_mux(
       .in0(sign_in),
@@ -350,7 +350,7 @@ endmodule
 // Adder
 //------------------------------------------------------------------------
 
-module vc_Adder_simple #( parameter W = 1 )
+module mul_Adder_simple #( parameter W = 1 )
 (
   input  [W-1:0] in0, in1,
   output [W-1:0] out
@@ -364,7 +364,7 @@ endmodule
 // Subtractor
 //------------------------------------------------------------------------
 
-module vc_Subtractor #( parameter W = 1 )
+module mul_Subtractor #( parameter W = 1 )
 (
   input  [W-1:0] in0, in1,
   output [W-1:0] out
@@ -378,7 +378,7 @@ endmodule
 // 2 Input Mux
 //------------------------------------------------------------------------
 
-module Mux2 #( parameter W = 1 )
+module mul_Mux2 #( parameter W = 1 )
 (
   input      [W-1:0] in0, in1,
   input              sel,
@@ -412,7 +412,7 @@ module shift_module #(parameter dir = 0, parameter W = 1)
   wire  [W-1:0] mux_in;
   wire  [W-1:0] mux_out;
 
-  Mux2 #(
+  mul_Mux2 #(
     .W(W))
     mux(
       .in0(unsigned_num),
@@ -454,7 +454,7 @@ module Counter
 
   assign counter_reg_out = counter_reg;
 
-  Mux2 #(
+  mul_Mux2 #(
     .W(5))
     counter_mux(
       .in0(val),
@@ -463,7 +463,7 @@ module Counter
       .out(counter_mux_out)
     );
 
-  vc_Subtractor #(
+  mul_Subtractor #(
     .W(5))
     subtractor(
       .in0(counter_reg_out),
