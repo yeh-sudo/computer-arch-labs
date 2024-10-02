@@ -82,6 +82,12 @@ module riscv_Core
   wire        branch_cond_ge_Xhl;
   wire        branch_cond_geu_Xhl;
   wire [31:0] proc2csr_data_Whl;
+  wire        rs1_X_byp_Dhl;
+  wire        rs2_X_byp_Dhl;
+  wire        rs1_M_byp_Dhl;
+  wire        rs2_M_byp_Dhl;
+  wire        rs1_W_byp_Dhl;
+  wire        rs2_W_byp_Dhl;
 
   //----------------------------------------------------------------------
   // Pack Memory Request Messages
@@ -174,6 +180,12 @@ module riscv_Core
     .stall_Xhl              (stall_Xhl),
     .stall_Mhl              (stall_Mhl),
     .stall_Whl              (stall_Whl),
+    .rs1_X_byp_Dhl           (rs1_X_byp_Dhl),
+    .rs2_X_byp_Dhl           (rs2_X_byp_Dhl),
+    .rs1_M_byp_Dhl           (rs1_M_byp_Dhl),
+    .rs2_M_byp_Dhl           (rs2_M_byp_Dhl),
+    .rs1_W_byp_Dhl           (rs1_W_byp_Dhl),
+    .rs2_W_byp_Dhl           (rs2_W_byp_Dhl),
 
     // Control Signals (dpath->ctrl)
 
@@ -234,6 +246,12 @@ module riscv_Core
     .stall_Xhl               (stall_Xhl),
     .stall_Mhl               (stall_Mhl),
     .stall_Whl               (stall_Whl),
+    .rs1_X_byp_Dhl           (rs1_X_byp_Dhl),
+    .rs2_X_byp_Dhl           (rs2_X_byp_Dhl),
+    .rs1_M_byp_Dhl           (rs1_M_byp_Dhl),
+    .rs2_M_byp_Dhl           (rs2_M_byp_Dhl),
+    .rs1_W_byp_Dhl           (rs1_W_byp_Dhl),
+    .rs2_W_byp_Dhl           (rs2_W_byp_Dhl),
 
     // Control Signals (dpath->ctrl)
 

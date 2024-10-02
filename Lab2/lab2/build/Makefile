@@ -59,6 +59,38 @@ tests = \
   riscv-bne.vmh \
   riscv-blt.vmh \
   riscv-jal.vmh \
+  riscv-lh.vmh \
+  riscv-andi.vmh \
+  riscv-xori.vmh \
+  riscv-slli.vmh \
+  riscv-srli.vmh \
+  riscv-srai.vmh \
+  riscv-slti.vmh \
+  riscv-sltiu.vmh \
+  riscv-sub.vmh \
+  riscv-slt.vmh \
+  riscv-sltu.vmh \
+  riscv-sll.vmh \
+  riscv-srl.vmh \
+  riscv-sra.vmh \
+  riscv-and.vmh \
+  riscv-or.vmh \
+  riscv-xor.vmh \
+  riscv-lb.vmh \
+  riscv-lbu.vmh \
+  riscv-lhu.vmh \
+  riscv-sb.vmh \
+  riscv-sh.vmh \
+  riscv-jalr.vmh \
+  riscv-beq.vmh \
+  riscv-bge.vmh \
+  riscv-bltu.vmh \
+  riscv-bgeu.vmh \
+  riscv-mul.vmh \
+  riscv-div.vmh \
+  riscv-divu.vmh \
+  riscv-rem.vmh \
+  riscv-remu.vmh \
 
 riscvstall_rtl_sim = riscvstall-sim
 riscvstall_rtl_rand_sim = riscvstall-randdelay-sim
