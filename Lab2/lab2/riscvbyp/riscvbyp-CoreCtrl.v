@@ -502,21 +502,9 @@ module riscv_CoreCtrl
                             ( rs1_en_Dhl && inst_val_Xhl && rf_wen_Xhl
                               && ( rs1_addr_Dhl == rf_waddr_Xhl )
                               && ( rf_waddr_Xhl != 5'd0 ) )
-                         || ( rs1_en_Dhl && inst_val_Mhl && rf_wen_Mhl
-                              && ( rs1_addr_Dhl == rf_waddr_Mhl )
-                              && ( rf_waddr_Mhl != 5'd0 ) )
-                         || ( rs1_en_Dhl && inst_val_Whl && rf_wen_Whl
-                              && ( rs1_addr_Dhl == rf_waddr_Whl )
-                              && ( rf_waddr_Whl != 5'd0 ) )
                          || ( rs2_en_Dhl && inst_val_Xhl && rf_wen_Xhl
                               && ( rs2_addr_Dhl == rf_waddr_Xhl )
-                              && ( rf_waddr_Xhl != 5'd0 ) )
-                         || ( rs2_en_Dhl && inst_val_Mhl && rf_wen_Mhl
-                              && ( rs2_addr_Dhl == rf_waddr_Mhl )
-                              && ( rf_waddr_Mhl != 5'd0 ) )
-                         || ( rs2_en_Dhl && inst_val_Whl && rf_wen_Whl
-                              && ( rs2_addr_Dhl == rf_waddr_Whl )
-                              && ( rf_waddr_Whl != 5'd0 ) ) );
+                              && ( rf_waddr_Xhl != 5'd0 ) ) );
 
   assign rs1_X_byp_Dhl = ( rs1_en_Dhl && inst_val_Xhl && rf_wen_Xhl
                            && ( ir_Xhl_opcode != 7'b0000011 )

@@ -21,7 +21,7 @@ module riscv_CoreDpathPipeMulDiv
   output [63:0] muldivresp_msg_result,
   output        muldivresp_val,
   input         muldivresp_rdy,
-  //These need to be hooked up to something!
+  // These need to be hooked up to something!
   input         stall_Xhl,
   input         stall_Mhl,
   input         stall_X2hl,
@@ -74,11 +74,11 @@ module riscv_CoreDpathPipeMulDiv
       end else if (!stall_Xhl) begin
         val0_reg <= 1'b0;
       end
-      if (! stall_Mhl) begin
+      if ( !stall_Mhl ) begin
           result1_reg <= result0;
           val1_reg <= val1_next;
       end
-      if ( !stall  ) begin
+      if ( !stall ) begin
         result2_reg <= result1_reg;
         result3_reg <= result2_reg;
         val2_reg    <= val2_next;

@@ -56,13 +56,13 @@ module riscv_Core
   wire  [2:0] op1_mux_sel_Dhl;
   wire [31:0] inst_Dhl;
   wire  [3:0] alu_fn_Xhl;
-  wire  [2:0] muldivreq_msg_fn_Xhl;
+  wire  [2:0] muldivreq_msg_fn_Dhl;
   wire        muldivreq_val;
   wire        muldivreq_rdy;
   wire        muldivresp_val;
   wire        muldivresp_rdy;
-  wire        muldiv_mux_sel_Xhl;
-  wire        execute_mux_sel_Xhl;
+  wire        execute_mux_sel_X3hl;
+  wire        muldiv_mux_sel_X3hl;
   wire  [2:0] dmemresp_mux_sel_Mhl;
   wire        dmemresp_queue_en_Mhl;
   wire        dmemresp_queue_val_Mhl;
@@ -73,6 +73,8 @@ module riscv_Core
   wire        stall_Dhl;
   wire        stall_Xhl;
   wire        stall_Mhl;
+  wire        stall_X2hl;
+  wire        stall_X3hl;
   wire        stall_Whl;
 
   wire        branch_cond_eq_Xhl;
@@ -82,6 +84,16 @@ module riscv_Core
   wire        branch_cond_ge_Xhl;
   wire        branch_cond_geu_Xhl;
   wire [31:0] proc2csr_data_Whl;
+  wire        rs1_X_byp_Dhl;
+  wire        rs2_X_byp_Dhl;
+  wire        rs1_M_byp_Dhl;
+  wire        rs2_M_byp_Dhl;
+  wire        rs1_W_byp_Dhl;
+  wire        rs2_W_byp_Dhl;
+  wire        rs1_X2_byp_Dhl;
+  wire        rs2_X2_byp_Dhl;
+  wire        rs1_X3_byp_Dhl;
+  wire        rs2_X3_byp_Dhl;
 
   //----------------------------------------------------------------------
   // Pack Memory Request Messages
@@ -151,29 +163,41 @@ module riscv_Core
 
     // Controls Signals (ctrl->dpath)
 
-    .pc_mux_sel_Phl         (pc_mux_sel_Phl),
-    .op0_mux_sel_Dhl        (op0_mux_sel_Dhl),
-    .op1_mux_sel_Dhl        (op1_mux_sel_Dhl),
-    .inst_Dhl               (inst_Dhl),
-    .alu_fn_Xhl             (alu_fn_Xhl),
-    .muldivreq_msg_fn_Xhl   (muldivreq_msg_fn_Xhl),
-    .muldivreq_val          (muldivreq_val),
-    .muldivreq_rdy          (muldivreq_rdy),
-    .muldivresp_val         (muldivresp_val),
-    .muldivresp_rdy         (muldivresp_rdy),
-    .muldiv_mux_sel_Xhl     (muldiv_mux_sel_Xhl),
-    .execute_mux_sel_Xhl    (execute_mux_sel_Xhl),
-    .dmemresp_mux_sel_Mhl   (dmemresp_mux_sel_Mhl),
-    .dmemresp_queue_en_Mhl  (dmemresp_queue_en_Mhl),
-    .dmemresp_queue_val_Mhl (dmemresp_queue_val_Mhl),
-    .wb_mux_sel_Mhl         (wb_mux_sel_Mhl),
-    .rf_wen_out_Whl         (rf_wen_Whl),
-    .rf_waddr_Whl           (rf_waddr_Whl),
-    .stall_Fhl              (stall_Fhl),
-    .stall_Dhl              (stall_Dhl),
-    .stall_Xhl              (stall_Xhl),
-    .stall_Mhl              (stall_Mhl),
-    .stall_Whl              (stall_Whl),
+    .pc_mux_sel_Phl           (pc_mux_sel_Phl),
+    .op0_mux_sel_Dhl          (op0_mux_sel_Dhl),
+    .op1_mux_sel_Dhl          (op1_mux_sel_Dhl),
+    .inst_Dhl                 (inst_Dhl),
+    .alu_fn_Xhl               (alu_fn_Xhl),
+    .muldivreq_msg_fn_Dhl     (muldivreq_msg_fn_Dhl),
+    .muldivreq_val            (muldivreq_val),
+    .muldivreq_rdy            (muldivreq_rdy),
+    .muldivresp_val           (muldivresp_val),
+    .muldivresp_rdy           (muldivresp_rdy),
+    .muldiv_mux_sel_X3hl      (muldiv_mux_sel_X3hl),
+    .execute_mux_sel_X3hl     (execute_mux_sel_X3hl),
+    .dmemresp_mux_sel_Mhl     (dmemresp_mux_sel_Mhl),
+    .dmemresp_queue_en_Mhl    (dmemresp_queue_en_Mhl),
+    .dmemresp_queue_val_Mhl  (dmemresp_queue_val_Mhl),
+    .wb_mux_sel_Mhl           (wb_mux_sel_Mhl),
+    .rf_wen_out_Whl           (rf_wen_Whl),
+    .rf_waddr_Whl             (rf_waddr_Whl),
+    .stall_Fhl                (stall_Fhl),
+    .stall_Dhl                (stall_Dhl),
+    .stall_Xhl                (stall_Xhl),
+    .stall_Mhl                (stall_Mhl),
+    .stall_X2hl               (stall_X2hl),
+    .stall_X3hl               (stall_X3hl),
+    .stall_Whl                (stall_Whl),
+    .rs1_X_byp_Dhl            (rs1_X_byp_Dhl),
+    .rs2_X_byp_Dhl            (rs2_X_byp_Dhl),
+    .rs1_M_byp_Dhl            (rs1_M_byp_Dhl),
+    .rs2_M_byp_Dhl            (rs2_M_byp_Dhl),
+    .rs1_W_byp_Dhl            (rs1_W_byp_Dhl),
+    .rs2_W_byp_Dhl            (rs2_W_byp_Dhl),
+    .rs1_X2_byp_Dhl            (rs1_X2_byp_Dhl),
+    .rs2_X2_byp_Dhl            (rs2_X2_byp_Dhl),
+    .rs1_X3_byp_Dhl            (rs1_X3_byp_Dhl),
+    .rs2_X3_byp_Dhl            (rs2_X3_byp_Dhl),
 
     // Control Signals (dpath->ctrl)
 
@@ -216,13 +240,13 @@ module riscv_Core
     .op1_mux_sel_Dhl         (op1_mux_sel_Dhl),
     .inst_Dhl                (inst_Dhl),
     .alu_fn_Xhl              (alu_fn_Xhl),
-    .muldivreq_msg_fn_Xhl    (muldivreq_msg_fn_Xhl),
+    .muldivreq_msg_fn_Dhl    (muldivreq_msg_fn_Dhl),
     .muldivreq_val           (muldivreq_val),
     .muldivreq_rdy           (muldivreq_rdy),
     .muldivresp_val          (muldivresp_val),
     .muldivresp_rdy          (muldivresp_rdy),
-    .muldiv_mux_sel_Xhl      (muldiv_mux_sel_Xhl),
-    .execute_mux_sel_Xhl     (execute_mux_sel_Xhl),
+    .muldiv_mux_sel_X3hl     (muldiv_mux_sel_X3hl),
+    .execute_mux_sel_X3hl    (execute_mux_sel_X3hl),
     .dmemresp_mux_sel_Mhl    (dmemresp_mux_sel_Mhl),
     .dmemresp_queue_en_Mhl   (dmemresp_queue_en_Mhl),
     .dmemresp_queue_val_Mhl  (dmemresp_queue_val_Mhl),
@@ -233,7 +257,19 @@ module riscv_Core
     .stall_Dhl               (stall_Dhl),
     .stall_Xhl               (stall_Xhl),
     .stall_Mhl               (stall_Mhl),
+    .stall_X2hl              (stall_X2hl),
+    .stall_X3hl              (stall_X3hl),
     .stall_Whl               (stall_Whl),
+    .rs1_X_byp_Dhl           (rs1_X_byp_Dhl),
+    .rs2_X_byp_Dhl           (rs2_X_byp_Dhl),
+    .rs1_M_byp_Dhl           (rs1_M_byp_Dhl),
+    .rs2_M_byp_Dhl           (rs2_M_byp_Dhl),
+    .rs1_W_byp_Dhl           (rs1_W_byp_Dhl),
+    .rs2_W_byp_Dhl           (rs2_W_byp_Dhl),
+    .rs1_X2_byp_Dhl           (rs1_X2_byp_Dhl),
+    .rs2_X2_byp_Dhl           (rs2_X2_byp_Dhl),
+    .rs1_X3_byp_Dhl           (rs1_X3_byp_Dhl),
+    .rs2_X3_byp_Dhl           (rs2_X3_byp_Dhl),
 
     // Control Signals (dpath->ctrl)
 
