@@ -510,7 +510,6 @@ module riscv_CoreCtrl
   // Stall for data hazards if either of the operand read addresses are
   // the same as the write addresses of instruction later in the pipeline
 
-  // TODO: Add mul/div stall conditions
   wire stall_hazard_Dhl   = inst_val_Dhl && (
                             ( rs1_en_Dhl && inst_val_Xhl && rf_wen_Xhl
                               && ( rs1_addr_Dhl == rf_waddr_Xhl )
@@ -865,8 +864,6 @@ module riscv_CoreCtrl
   end
 
   wire inst_val_X3hl = ( !bubble_X3hl && !squash_X3hl );
-
-  // TODO: modify mul/div rule
 
   assign muldivresp_rdy = !stall_X3hl;
 

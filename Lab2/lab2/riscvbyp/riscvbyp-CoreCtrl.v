@@ -495,17 +495,6 @@ module riscv_CoreCtrl
 
   wire stall_muldiv_Dhl = ( muldivreq_val_Dhl && inst_val_Dhl && !muldivreq_rdy );
 
-  // Stall for data hazards if either of the operand read addresses are
-  // the same as the write addresses of instruction later in the pipeline
-
-  wire stall_hazard_Dhl   = inst_val_Dhl && (
-                            ( rs1_en_Dhl && inst_val_Xhl && rf_wen_Xhl
-                              && ( rs1_addr_Dhl == rf_waddr_Xhl )
-                              && ( rf_waddr_Xhl != 5'd0 ) )
-                         || ( rs2_en_Dhl && inst_val_Xhl && rf_wen_Xhl
-                              && ( rs2_addr_Dhl == rf_waddr_Xhl )
-                              && ( rf_waddr_Xhl != 5'd0 ) ) );
-
   assign rs1_X_byp_Dhl = ( rs1_en_Dhl && inst_val_Xhl && rf_wen_Xhl
                            && ( ir_Xhl_opcode != 7'b0000011 )
                            && ( rs1_addr_Dhl == rf_waddr_Xhl )
@@ -548,7 +537,6 @@ module riscv_CoreCtrl
 
   assign stall_Dhl = ( stall_Xhl
                   ||   stall_muldiv_Dhl
-                  ||   stall_hazard_Dhl 
                   ||   stall_load_use );
 
   // Next bubble bit

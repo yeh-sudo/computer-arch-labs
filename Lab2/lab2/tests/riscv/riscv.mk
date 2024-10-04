@@ -46,4 +46,5 @@ riscv_srcs += \
   riscv-mul.S \
   riscv-rem.S \
   riscv-remu.S \
+  riscv-custom.S \
 
