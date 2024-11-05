@@ -2,3 +2,8 @@
 *.tar.gz
 *.docx
 
+*.out
+*-sim
+
+Lab*/lab*/ubmark/build/
+Lab*/lab*/tests/build/
