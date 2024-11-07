@@ -29,7 +29,7 @@ module riscv_CoreDpath
   // Controls Signals (ctrl->dpath)
 
   input   [1:0] pc_mux_sel_Phl,
-  input   [1:0] steering_mux_sel_Dhl,
+  input   [3:0] steering_mux_sel_Dhl,
   input   [3:0] opA0_byp_mux_sel_Dhl,
   input   [1:0] opA0_mux_sel_Dhl,
   input   [3:0] opA1_byp_mux_sel_Dhl,
@@ -226,31 +226,53 @@ module riscv_CoreDpath
   wire [31:0] branch_targ_Dhl;
   wire [31:0] jump_targ_Dhl;
 
-  assign pcA_Dhl = 
-    (steering_mux_sel_Dhl == 2'd0) ? pc_Dhl :
-    (steering_mux_sel_Dhl == 2'd1) ? pc_plus4_Dhl :
-    (steering_mux_sel_Dhl == 2'd2) ? pc_Dhl :
-    (steering_mux_sel_Dhl == 2'd3) ? pc_Dhl :
-                                     32'bx;
+  assign pcA_Dhl = (steering_mux_sel_Dhl == 4'd0) ? pc_Dhl
+                 : (steering_mux_sel_Dhl == 4'd1) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd2) ? pc_Dhl
+                 : (steering_mux_sel_Dhl == 4'd3) ? pc_Dhl
+                 : (steering_mux_sel_Dhl == 4'd4) ? pc_plus4_Dhl
+                 : (steering_mux_sel_Dhl == 4'd5) ? pc_plus4_Dhl
+                 : (steering_mux_sel_Dhl == 4'd6) ? pc_plus4_Dhl
+                 : (steering_mux_sel_Dhl == 4'd7) ? pc_Dhl
+                 : (steering_mux_sel_Dhl == 4'd8) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd9) ? pc_plus4_Dhl
+                 :                                  pc_Dhl;
 
-  assign pcA_plus4_Dhl =
-    (steering_mux_sel_Dhl == 2'd0) ? pc_plus4_Dhl :
-    (steering_mux_sel_Dhl == 2'd1) ? pc_plus8_Dhl :
-    (steering_mux_sel_Dhl == 2'd2) ? pc_plus4_Dhl :
-    (steering_mux_sel_Dhl == 2'd3) ? pc_plus4_Dhl :
-                                     32'bx;
+  assign pcA_plus4_Dhl = (steering_mux_sel_Dhl == 4'd0) ? pc_plus4_Dhl
+                       : (steering_mux_sel_Dhl == 4'd1) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd2) ? pc_plus4_Dhl
+                       : (steering_mux_sel_Dhl == 4'd3) ? pc_plus4_Dhl
+                       : (steering_mux_sel_Dhl == 4'd4) ? pc_plus8_Dhl
+                       : (steering_mux_sel_Dhl == 4'd5) ? pc_plus8_Dhl
+                       : (steering_mux_sel_Dhl == 4'd6) ? pc_plus8_Dhl
+                       : (steering_mux_sel_Dhl == 4'd7) ? pc_plus4_Dhl
+                       : (steering_mux_sel_Dhl == 4'd8) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd9) ? pc_plus8_Dhl
+                       :                                  pc_plus4_Dhl;
 
-  assign pcB_Dhl = 
-    (steering_mux_sel_Dhl == 2'd0) ? pc_plus4_Dhl :
-    (steering_mux_sel_Dhl == 2'd1) ? pc_Dhl :
-    (steering_mux_sel_Dhl == 2'd2) ? pc_plus4_Dhl :
-                                     32'bx;
+  assign pcB_Dhl = (steering_mux_sel_Dhl == 4'd0) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd1) ? pc_Dhl
+                 : (steering_mux_sel_Dhl == 4'd2) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd3) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd4) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd5) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd6) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd7) ? 32'b0
+                 : (steering_mux_sel_Dhl == 4'd8) ? pc_plus4_Dhl
+                 : (steering_mux_sel_Dhl == 4'd9) ? 32'b0
+                 :                                  32'b0;
 
-  assign pcB_plus4_Dhl =
-    (steering_mux_sel_Dhl == 2'd0) ? pc_plus8_Dhl :
-    (steering_mux_sel_Dhl == 2'd1) ? pc_plus4_Dhl :
-    (steering_mux_sel_Dhl == 2'd2) ? pc_plus8_Dhl :
-                                     32'bx;
+  assign pcB_plus4_Dhl = (steering_mux_sel_Dhl == 4'd0) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd1) ? pc_plus4_Dhl
+                       : (steering_mux_sel_Dhl == 4'd2) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd3) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd4) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd5) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd6) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd7) ? 32'b0
+                       : (steering_mux_sel_Dhl == 4'd8) ? pc_plus8_Dhl
+                       : (steering_mux_sel_Dhl == 4'd9) ? 32'b0
+                       :                                  32'b0;
 
   assign branch_targ_Dhl = pcA_Dhl + instA_imm_sb_Dhl;
   assign jump_targ_Dhl   = pcA_Dhl + instA_imm_uj_Dhl;
@@ -306,7 +328,7 @@ module riscv_CoreDpath
     : ( opA0_mux_sel_Dhl == 2'd1 ) ? pcA_Dhl
     : ( opA0_mux_sel_Dhl == 2'd2 ) ? pcA_plus4_Dhl
     : ( opA0_mux_sel_Dhl == 2'd3 ) ? const0
-    :                               32'bx;
+    :                                32'bx;
 
   // Operand 1 bypass mux
 
