@@ -233,41 +233,16 @@ module riscv_CoreCtrl
   reg             bubble_Dhl;
   reg [1:0]       next_inst;
 
-  reg [31:0][6:0] SB;
+  reg [6:0] SB [31:0];
+
+  wire [6:0] temp = SB[15];
+
+  integer i_D;
 
   initial begin
-    SB[0]  = 7'b0;
-    SB[1]  = 7'b0;
-    SB[2]  = 7'b0;
-    SB[3]  = 7'b0;
-    SB[4]  = 7'b0;
-    SB[5]  = 7'b0;
-    SB[6]  = 7'b0;
-    SB[7]  = 7'b0;
-    SB[8]  = 7'b0;
-    SB[9]  = 7'b0;
-    SB[10] = 7'b0;
-    SB[11] = 7'b0;
-    SB[12] = 7'b0;
-    SB[13] = 7'b0;
-    SB[14] = 7'b0;
-    SB[15] = 7'b0;
-    SB[16] = 7'b0;
-    SB[17] = 7'b0;
-    SB[18] = 7'b0;
-    SB[19] = 7'b0;
-    SB[20] = 7'b0;
-    SB[21] = 7'b0;
-    SB[22] = 7'b0;
-    SB[23] = 7'b0;
-    SB[24] = 7'b0;
-    SB[25] = 7'b0;
-    SB[26] = 7'b0;
-    SB[27] = 7'b0;
-    SB[28] = 7'b0;
-    SB[29] = 7'b0;
-    SB[30] = 7'b0;
-    SB[31] = 7'b0;
+    for (i_D = 0; i_D < 32; i_D = i_D + 1) begin
+      SB[i_D] = 7'b0;
+    end
   end
 
   // TODO: Finish score board
@@ -556,13 +531,13 @@ module riscv_CoreCtrl
 
   // Shorten register specifier name for table
 
-  wire [4:0] rs10 = instA_rs1_Dhl;
-  wire [4:0] rs20 = instA_rs2_Dhl;
-  wire [4:0] rd0 = instA_rd_Dhl;
+  wire [4:0] rs10 = inst0_rs1_Dhl;
+  wire [4:0] rs20 = inst0_rs2_Dhl;
+  wire [4:0] rd0 = inst0_rd_Dhl;
 
-  wire [4:0] rs11 = instB_rs1_Dhl;
-  wire [4:0] rs21 = instB_rs2_Dhl;
-  wire [4:0] rd1 = instB_rd_Dhl;
+  wire [4:0] rs11 = inst1_rs1_Dhl;
+  wire [4:0] rs21 = inst1_rs2_Dhl;
+  wire [4:0] rd1 = inst1_rd_Dhl;
 
   // Instruction Decode
 
@@ -609,8 +584,8 @@ module riscv_CoreCtrl
       `RISCV_INST_MSG_LBU     :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_x,   ld,  ml_b, dmm_bu, wm_mem, y,  rd0, n   };
       `RISCV_INST_MSG_LHU     :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_x,   ld,  ml_h, dmm_hu, wm_mem, y,  rd0, n   };
       `RISCV_INST_MSG_SW      :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_w, dmm_w,  wm_mem, n,  rx, n   };
-      `RISCV_INST_MSG_SB      :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_b, dmm_b,  wm_mem, n,  rx, n   };
-      `RISCV_INST_MSG_SH      :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_h, dmm_h,  wm_mem, n,  rx, n   };
+      `RISCV_INST_MSG_SB      :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_b, dmm_b,  wm_mem, y,  rs20, n  };
+      `RISCV_INST_MSG_SH      :cs0={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_h, dmm_h,  wm_mem, y,  rs20, n  };
 
       `RISCV_INST_MSG_JAL     :cs0={ y,  y,    br_none, pm_j,   am_pc4,  n,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd0, n   };
       `RISCV_INST_MSG_JALR    :cs0={ y,  y,    br_none, pm_r,   am_pc4,  y,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd0, n   };
@@ -672,8 +647,8 @@ module riscv_CoreCtrl
       `RISCV_INST_MSG_LBU     :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_x,   ld,  ml_b, dmm_bu, wm_mem, y,  rd1, n   };
       `RISCV_INST_MSG_LHU     :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_i, n,  alu_add,  md_x,    n, mdm_x, em_x,   ld,  ml_h, dmm_hu, wm_mem, y,  rd1, n   };
       `RISCV_INST_MSG_SW      :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_w, dmm_w,  wm_mem, n,  rx, n   };
-      `RISCV_INST_MSG_SB      :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_b, dmm_b,  wm_mem, n,  rx, n   };
-      `RISCV_INST_MSG_SH      :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_h, dmm_h,  wm_mem, n,  rx, n   };
+      `RISCV_INST_MSG_SB      :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_b, dmm_b,  wm_mem, y,  rs21, n  };
+      `RISCV_INST_MSG_SH      :cs1={ y,  n,    br_none, pm_p,   am_rdat, y,  bm_imm_s, y,  alu_add,  md_x,    n, mdm_x, em_x,   st,  ml_h, dmm_h,  wm_mem, y,  rs21, n  };
 
       `RISCV_INST_MSG_JAL     :cs1={ y,  y,    br_none, pm_j,   am_pc4,  n,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd1, n   };
       `RISCV_INST_MSG_JALR    :cs1={ y,  y,    br_none, pm_r,   am_pc4,  y,  bm_0,     n,  alu_add,  md_x,    n, mdm_x, em_alu, nr,  ml_x, dmm_x,  wm_alu, y,  rd1, n   };
@@ -720,8 +695,8 @@ module riscv_CoreCtrl
   */
 
   wire [3:0] inst_sel = ( stall_B_state == 2'd0 && next_inst == 2'd0 && ( steering_state == 2'd0 || steering_state == 2'd2 ) ) ? 4'd0
-                      : ( stall_B_state == 2'd0 && next_inst == 2'd0 && ( steering_state == 2'd1 ))                            ? 4'd1
-                      : ( stall_B_state == 2'd1 && next_inst == 2'd0 )                                                         ? 4'd2
+                      : ( stall_B_state == 2'd0 && next_inst == 2'd0 && ( steering_state == 2'd1 ) )                           ? 4'd1
+                      : ( (stall_B_state == 2'd1 && next_inst == 2'd0) )                                                       ? 4'd2
                       : ( stall_B_state == 2'd2 && next_inst == 2'd0 )                                                         ? 4'd3
                       : ( stall_B_state == 2'd3 && next_inst == 2'd0 )                                                         ? 4'd4
                       : ( next_inst == 2'd1 )                                                                                  ? 4'd5
@@ -827,11 +802,11 @@ module riscv_CoreCtrl
 
   // Operand Bypassing Logic
 
-  wire [4:0] rs10_addr_Dhl  = rs10;
-  wire [4:0] rs20_addr_Dhl  = rs20;
+  wire [4:0] rs10_addr_Dhl  = instA_Dhl[`RISCV_INST_MSG_RS1];
+  wire [4:0] rs20_addr_Dhl  = instA_Dhl[`RISCV_INST_MSG_RS2];
 
-  wire [4:0] rs11_addr_Dhl  = rs11;
-  wire [4:0] rs21_addr_Dhl  = rs21;
+  wire [4:0] rs11_addr_Dhl  = instB_Dhl[`RISCV_INST_MSG_RS1];
+  wire [4:0] rs21_addr_Dhl  = instB_Dhl[`RISCV_INST_MSG_RS2];
 
   wire       rs10_en_Dhl    = csA[`RISCV_INST_MSG_RS1_EN];
   wire       rs20_en_Dhl    = csA[`RISCV_INST_MSG_RS2_EN];
@@ -841,64 +816,322 @@ module riscv_CoreCtrl
 
   // For Part 2 and Optionaly Part 1, replace the following control logic with a scoreboard
 
+  // // pipeline A rs1 ------------------------------------------------
+  // wire       rs10_AX0_byp_Dhl = rs10_en_Dhl
+  //                        && rfA_wen_X0hl
+  //                        && (rs10_addr_Dhl == rfA_waddr_X0hl)
+  //                        && !(rfA_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs10_AX1_byp_Dhl = rs10_en_Dhl
+  //                        && rfA_wen_X1hl
+  //                        && (rs10_addr_Dhl == rfA_waddr_X1hl)
+  //                        && !(rfA_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs10_AX2_byp_Dhl = rs10_en_Dhl
+  //                        && rfA_wen_X2hl
+  //                        && (rs10_addr_Dhl == rfA_waddr_X2hl)
+  //                        && !(rfA_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs10_AX3_byp_Dhl = rs10_en_Dhl
+  //                        && rfA_wen_X3hl
+  //                        && (rs10_addr_Dhl == rfA_waddr_X3hl)
+  //                        && !(rfA_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs10_AW_byp_Dhl = rs10_en_Dhl
+  //                        && rfA_wen_Whl
+  //                        && (rs10_addr_Dhl == rfA_waddr_Whl)
+  //                        && !(rfA_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+
+  // wire       rs10_BX0_byp_Dhl = rs10_en_Dhl
+  //                        && rfB_wen_X0hl
+  //                        && (rs10_addr_Dhl == rfB_waddr_X0hl)
+  //                        && !(rfB_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs10_BX1_byp_Dhl = rs10_en_Dhl
+  //                        && rfB_wen_X1hl
+  //                        && (rs10_addr_Dhl == rfB_waddr_X1hl)
+  //                        && !(rfB_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs10_BX2_byp_Dhl = rs10_en_Dhl
+  //                        && rfB_wen_X2hl
+  //                        && (rs10_addr_Dhl == rfB_waddr_X2hl)
+  //                        && !(rfB_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs10_BX3_byp_Dhl = rs10_en_Dhl
+  //                        && rfB_wen_X3hl
+  //                        && (rs10_addr_Dhl == rfB_waddr_X3hl)
+  //                        && !(rfB_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs10_BW_byp_Dhl = rs10_en_Dhl
+  //                        && rfB_wen_Whl
+  //                        && (rs10_addr_Dhl == rfB_waddr_Whl)
+  //                        && !(rfB_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+  // // ---------------------------------------------------------------
+
+  // // pipeline A rs2 ------------------------------------------------
+  // wire       rs20_AX0_byp_Dhl = rs20_en_Dhl
+  //                        && rfA_wen_X0hl
+  //                        && (rs20_addr_Dhl == rfA_waddr_X0hl)
+  //                        && !(rfA_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs20_AX1_byp_Dhl = rs20_en_Dhl
+  //                        && rfA_wen_X1hl
+  //                        && (rs20_addr_Dhl == rfA_waddr_X1hl)
+  //                        && !(rfA_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs20_AX2_byp_Dhl = rs20_en_Dhl
+  //                        && rfA_wen_X2hl
+  //                        && (rs20_addr_Dhl == rfA_waddr_X2hl)
+  //                        && !(rfA_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs20_AX3_byp_Dhl = rs20_en_Dhl
+  //                        && rfA_wen_X3hl
+  //                        && (rs20_addr_Dhl == rfA_waddr_X3hl)
+  //                        && !(rfA_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs20_AW_byp_Dhl = rs20_en_Dhl
+  //                        && rfA_wen_Whl
+  //                        && (rs20_addr_Dhl == rfA_waddr_Whl)
+  //                        && !(rfA_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+
+  // wire       rs20_BX0_byp_Dhl = rs20_en_Dhl
+  //                        && rfB_wen_X0hl
+  //                        && (rs20_addr_Dhl == rfB_waddr_X0hl)
+  //                        && !(rfB_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs20_BX1_byp_Dhl = rs20_en_Dhl
+  //                        && rfB_wen_X1hl
+  //                        && (rs20_addr_Dhl == rfB_waddr_X1hl)
+  //                        && !(rfB_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs20_BX2_byp_Dhl = rs20_en_Dhl
+  //                        && rfB_wen_X2hl
+  //                        && (rs20_addr_Dhl == rfB_waddr_X2hl)
+  //                        && !(rfB_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs20_BX3_byp_Dhl = rs20_en_Dhl
+  //                        && rfB_wen_X3hl
+  //                        && (rs20_addr_Dhl == rfB_waddr_X3hl)
+  //                        && !(rfB_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs20_BW_byp_Dhl = rs20_en_Dhl
+  //                        && rfB_wen_Whl
+  //                        && (rs20_addr_Dhl == rfB_waddr_Whl)
+  //                        && !(rfB_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+  // // ---------------------------------------------------------------
+
+  // // pipeline B rs1 ------------------------------------------------
+  // wire       rs11_AX0_byp_Dhl = rs11_en_Dhl
+  //                        && rfA_wen_X0hl
+  //                        && (rs11_addr_Dhl == rfA_waddr_X0hl)
+  //                        && !(rfA_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs11_AX1_byp_Dhl = rs11_en_Dhl
+  //                        && rfA_wen_X1hl
+  //                        && (rs11_addr_Dhl == rfA_waddr_X1hl)
+  //                        && !(rfA_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs11_AX2_byp_Dhl = rs11_en_Dhl
+  //                        && rfA_wen_X2hl
+  //                        && (rs11_addr_Dhl == rfA_waddr_X2hl)
+  //                        && !(rfA_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs11_AX3_byp_Dhl = rs11_en_Dhl
+  //                        && rfA_wen_X3hl
+  //                        && (rs11_addr_Dhl == rfA_waddr_X3hl)
+  //                        && !(rfA_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs11_AW_byp_Dhl = rs11_en_Dhl
+  //                        && rfA_wen_Whl
+  //                        && (rs11_addr_Dhl == rfA_waddr_Whl)
+  //                        && !(rfA_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+  
+  // wire       rs11_BX0_byp_Dhl = rs11_en_Dhl
+  //                        && rfB_wen_X0hl
+  //                        && (rs11_addr_Dhl == rfB_waddr_X0hl)
+  //                        && !(rfB_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs11_BX1_byp_Dhl = rs11_en_Dhl
+  //                        && rfB_wen_X1hl
+  //                        && (rs11_addr_Dhl == rfB_waddr_X1hl)
+  //                        && !(rfB_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs11_BX2_byp_Dhl = rs11_en_Dhl
+  //                        && rfB_wen_X2hl
+  //                        && (rs11_addr_Dhl == rfB_waddr_X2hl)
+  //                        && !(rfB_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs11_BX3_byp_Dhl = rs11_en_Dhl
+  //                        && rfB_wen_X3hl
+  //                        && (rs11_addr_Dhl == rfB_waddr_X3hl)
+  //                        && !(rfB_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs11_BW_byp_Dhl = rs11_en_Dhl
+  //                        && rfB_wen_Whl
+  //                        && (rs11_addr_Dhl == rfB_waddr_Whl)
+  //                        && !(rfB_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+  // // ---------------------------------------------------------------
+
+  // // pipeline B rs2 ------------------------------------------------
+  // wire       rs21_AX0_byp_Dhl = rs21_en_Dhl
+  //                        && rfA_wen_X0hl
+  //                        && (rs21_addr_Dhl == rfA_waddr_X0hl)
+  //                        && !(rfA_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs21_AX1_byp_Dhl = rs21_en_Dhl
+  //                        && rfA_wen_X1hl
+  //                        && (rs21_addr_Dhl == rfA_waddr_X1hl)
+  //                        && !(rfA_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs21_AX2_byp_Dhl = rs21_en_Dhl
+  //                        && rfA_wen_X2hl
+  //                        && (rs21_addr_Dhl == rfA_waddr_X2hl)
+  //                        && !(rfA_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs21_AX3_byp_Dhl = rs21_en_Dhl
+  //                        && rfA_wen_X3hl
+  //                        && (rs21_addr_Dhl == rfA_waddr_X3hl)
+  //                        && !(rfA_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs21_AW_byp_Dhl = rs21_en_Dhl
+  //                        && rfA_wen_Whl
+  //                        && (rs21_addr_Dhl == rfA_waddr_Whl)
+  //                        && !(rfA_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+
+  // wire       rs21_BX0_byp_Dhl = rs21_en_Dhl
+  //                        && rfB_wen_X0hl
+  //                        && (rs21_addr_Dhl == rfB_waddr_X0hl)
+  //                        && !(rfB_waddr_X0hl == 5'd0)
+  //                        && inst_val_X0hl;
+
+  // wire       rs21_BX1_byp_Dhl = rs21_en_Dhl
+  //                        && rfB_wen_X1hl
+  //                        && (rs21_addr_Dhl == rfB_waddr_X1hl)
+  //                        && !(rfB_waddr_X1hl == 5'd0)
+  //                        && inst_val_X1hl;
+
+  // wire       rs21_BX2_byp_Dhl = rs21_en_Dhl
+  //                        && rfB_wen_X2hl
+  //                        && (rs21_addr_Dhl == rfB_waddr_X2hl)
+  //                        && !(rfB_waddr_X2hl == 5'd0)
+  //                        && inst_val_X2hl;
+
+  // wire       rs21_BX3_byp_Dhl = rs21_en_Dhl
+  //                        && rfB_wen_X3hl
+  //                        && (rs21_addr_Dhl == rfB_waddr_X3hl)
+  //                        && !(rfB_waddr_X3hl == 5'd0)
+  //                        && inst_val_X3hl;
+
+  // wire       rs21_BW_byp_Dhl = rs21_en_Dhl
+  //                        && rfB_wen_Whl
+  //                        && (rs21_addr_Dhl == rfB_waddr_Whl)
+  //                        && !(rfB_waddr_Whl == 5'd0)
+  //                        && inst_val_Whl;
+  // // ---------------------------------------------------------------
+
   // pipeline A rs1 ------------------------------------------------
   wire       rs10_AX0_byp_Dhl = rs10_en_Dhl
                          && rfA_wen_X0hl
-                         && (rs10_addr_Dhl == rfA_waddr_X0hl)
+                         && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X0])
                          && !(rfA_waddr_X0hl == 5'd0)
-                         && inst_val_X0hl && !is_muldiv_X0hl;
+                         && inst_val_X0hl && !is_muldiv_X0hl && !is_load_X0hl;
 
   wire       rs10_AX1_byp_Dhl = rs10_en_Dhl
                          && rfA_wen_X1hl
-                         && (rs10_addr_Dhl == rfA_waddr_X1hl)
+                         && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X1])
                          && !(rfA_waddr_X1hl == 5'd0)
-                         && inst_val_X1hl && !is_muldiv_X1hl;
+                         && inst_val_X1hl && !is_muldiv_X1hl && !is_load_X1hl;
 
   wire       rs10_AX2_byp_Dhl = rs10_en_Dhl
                          && rfA_wen_X2hl
-                         && (rs10_addr_Dhl == rfA_waddr_X2hl)
+                         && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X2])
                          && !(rfA_waddr_X2hl == 5'd0)
                          && inst_val_X2hl && !is_muldiv_X2hl;
 
   wire       rs10_AX3_byp_Dhl = rs10_en_Dhl
                          && rfA_wen_X3hl
-                         && (rs10_addr_Dhl == rfA_waddr_X3hl)
+                         && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X3])
                          && !(rfA_waddr_X3hl == 5'd0)
                          && inst_val_X3hl && !is_muldiv_X3hl;
 
   wire       rs10_AW_byp_Dhl = rs10_en_Dhl
                          && rfA_wen_Whl
-                         && (rs10_addr_Dhl == rfA_waddr_Whl)
+                         && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_W])
                          && !(rfA_waddr_Whl == 5'd0)
                          && inst_val_Whl;
 
   wire       rs10_BX0_byp_Dhl = rs10_en_Dhl
                          && rfB_wen_X0hl
-                         && (rs10_addr_Dhl == rfB_waddr_X0hl)
+                         && !SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X0])
                          && !(rfB_waddr_X0hl == 5'd0)
                          && inst_val_X0hl;
 
   wire       rs10_BX1_byp_Dhl = rs10_en_Dhl
                          && rfB_wen_X1hl
-                         && (rs10_addr_Dhl == rfB_waddr_X1hl)
+                         && !SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X1])
                          && !(rfB_waddr_X1hl == 5'd0)
                          && inst_val_X1hl;
 
   wire       rs10_BX2_byp_Dhl = rs10_en_Dhl
                          && rfB_wen_X2hl
-                         && (rs10_addr_Dhl == rfB_waddr_X2hl)
+                         && !SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X2])
                          && !(rfB_waddr_X2hl == 5'd0)
                          && inst_val_X2hl;
 
   wire       rs10_BX3_byp_Dhl = rs10_en_Dhl
                          && rfB_wen_X3hl
-                         && (rs10_addr_Dhl == rfB_waddr_X3hl)
+                         && !SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_X3])
                          && !(rfB_waddr_X3hl == 5'd0)
                          && inst_val_X3hl;
 
   wire       rs10_BW_byp_Dhl = rs10_en_Dhl
                          && rfB_wen_Whl
-                         && (rs10_addr_Dhl == rfB_waddr_Whl)
+                         && !SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs10_addr_Dhl][`RISCV_SB_W])
                          && !(rfB_waddr_Whl == 5'd0)
                          && inst_val_Whl;
   // ---------------------------------------------------------------
@@ -906,61 +1139,71 @@ module riscv_CoreCtrl
   // pipeline A rs2 ------------------------------------------------
   wire       rs20_AX0_byp_Dhl = rs20_en_Dhl
                          && rfA_wen_X0hl
-                         && (rs20_addr_Dhl == rfA_waddr_X0hl)
+                         && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X0])
                          && !(rfA_waddr_X0hl == 5'd0)
-                         && inst_val_X0hl && !is_muldiv_X0hl;
+                         && inst_val_X0hl && !is_muldiv_X0hl && !is_load_X0hl;
 
   wire       rs20_AX1_byp_Dhl = rs20_en_Dhl
                          && rfA_wen_X1hl
-                         && (rs20_addr_Dhl == rfA_waddr_X1hl)
+                         && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X1])
                          && !(rfA_waddr_X1hl == 5'd0)
-                         && inst_val_X1hl && !is_muldiv_X1hl;
+                         && inst_val_X1hl && !is_muldiv_X1hl && !is_load_X1hl;
 
   wire       rs20_AX2_byp_Dhl = rs20_en_Dhl
                          && rfA_wen_X2hl
-                         && (rs20_addr_Dhl == rfA_waddr_X2hl)
+                         && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X2])
                          && !(rfA_waddr_X2hl == 5'd0)
                          && inst_val_X2hl && !is_muldiv_X2hl;
 
   wire       rs20_AX3_byp_Dhl = rs20_en_Dhl
                          && rfA_wen_X3hl
-                         && (rs20_addr_Dhl == rfA_waddr_X3hl)
+                         && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X3])
                          && !(rfA_waddr_X3hl == 5'd0)
                          && inst_val_X3hl && !is_muldiv_X3hl;
 
   wire       rs20_AW_byp_Dhl = rs20_en_Dhl
                          && rfA_wen_Whl
-                         && (rs20_addr_Dhl == rfA_waddr_Whl)
+                         && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_W])
                          && !(rfA_waddr_Whl == 5'd0)
                          && inst_val_Whl;
 
   wire       rs20_BX0_byp_Dhl = rs20_en_Dhl
                          && rfB_wen_X0hl
-                         && (rs20_addr_Dhl == rfB_waddr_X0hl)
+                         && !SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X0])
                          && !(rfB_waddr_X0hl == 5'd0)
                          && inst_val_X0hl;
 
   wire       rs20_BX1_byp_Dhl = rs20_en_Dhl
                          && rfB_wen_X1hl
-                         && (rs20_addr_Dhl == rfB_waddr_X1hl)
+                         && !SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X1])
                          && !(rfB_waddr_X1hl == 5'd0)
                          && inst_val_X1hl;
 
   wire       rs20_BX2_byp_Dhl = rs20_en_Dhl
                          && rfB_wen_X2hl
-                         && (rs20_addr_Dhl == rfB_waddr_X2hl)
+                         && !SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X2])
                          && !(rfB_waddr_X2hl == 5'd0)
                          && inst_val_X2hl;
 
   wire       rs20_BX3_byp_Dhl = rs20_en_Dhl
                          && rfB_wen_X3hl
-                         && (rs20_addr_Dhl == rfB_waddr_X3hl)
+                         && !SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_X3])
                          && !(rfB_waddr_X3hl == 5'd0)
                          && inst_val_X3hl;
 
   wire       rs20_BW_byp_Dhl = rs20_en_Dhl
                          && rfB_wen_Whl
-                         && (rs20_addr_Dhl == rfB_waddr_Whl)
+                         && !SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs20_addr_Dhl][`RISCV_SB_W])
                          && !(rfB_waddr_Whl == 5'd0)
                          && inst_val_Whl;
   // ---------------------------------------------------------------
@@ -968,123 +1211,142 @@ module riscv_CoreCtrl
   // pipeline B rs1 ------------------------------------------------
   wire       rs11_AX0_byp_Dhl = rs11_en_Dhl
                          && rfA_wen_X0hl
-                         && (rs11_addr_Dhl == rfA_waddr_X0hl)
+                         && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X0])
                          && !(rfA_waddr_X0hl == 5'd0)
-                         && inst_val_X0hl && !is_muldiv_X0hl;
+                         && inst_val_X0hl && !is_muldiv_X0hl && !is_load_X0hl;
 
   wire       rs11_AX1_byp_Dhl = rs11_en_Dhl
                          && rfA_wen_X1hl
-                         && (rs11_addr_Dhl == rfA_waddr_X1hl)
+                         && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X1])
                          && !(rfA_waddr_X1hl == 5'd0)
-                         && inst_val_X1hl && !is_muldiv_X1hl;
+                         && inst_val_X1hl && !is_muldiv_X1hl && !is_load_X1hl;
 
   wire       rs11_AX2_byp_Dhl = rs11_en_Dhl
                          && rfA_wen_X2hl
-                         && (rs11_addr_Dhl == rfA_waddr_X2hl)
+                         && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X2])
                          && !(rfA_waddr_X2hl == 5'd0)
                          && inst_val_X2hl && !is_muldiv_X2hl;
 
   wire       rs11_AX3_byp_Dhl = rs11_en_Dhl
                          && rfA_wen_X3hl
-                         && (rs11_addr_Dhl == rfA_waddr_X3hl)
+                         && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X3])
                          && !(rfA_waddr_X3hl == 5'd0)
                          && inst_val_X3hl && !is_muldiv_X3hl;
 
   wire       rs11_AW_byp_Dhl = rs11_en_Dhl
                          && rfA_wen_Whl
-                         && (rs11_addr_Dhl == rfA_waddr_Whl)
+                         && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_W])
                          && !(rfA_waddr_Whl == 5'd0)
                          && inst_val_Whl;
   
   wire       rs11_BX0_byp_Dhl = rs11_en_Dhl
                          && rfB_wen_X0hl
-                         && (rs11_addr_Dhl == rfB_waddr_X0hl)
+                         && !SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X0])
                          && !(rfB_waddr_X0hl == 5'd0)
                          && inst_val_X0hl;
 
   wire       rs11_BX1_byp_Dhl = rs11_en_Dhl
                          && rfB_wen_X1hl
-                         && (rs11_addr_Dhl == rfB_waddr_X1hl)
+                         && !SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X1])
                          && !(rfB_waddr_X1hl == 5'd0)
                          && inst_val_X1hl;
 
   wire       rs11_BX2_byp_Dhl = rs11_en_Dhl
                          && rfB_wen_X2hl
-                         && (rs11_addr_Dhl == rfB_waddr_X2hl)
+                         && !SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X2])
                          && !(rfB_waddr_X2hl == 5'd0)
                          && inst_val_X2hl;
 
   wire       rs11_BX3_byp_Dhl = rs11_en_Dhl
                          && rfB_wen_X3hl
-                         && (rs11_addr_Dhl == rfB_waddr_X3hl)
+                         && !SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_X3])
                          && !(rfB_waddr_X3hl == 5'd0)
                          && inst_val_X3hl;
 
   wire       rs11_BW_byp_Dhl = rs11_en_Dhl
                          && rfB_wen_Whl
-                         && (rs11_addr_Dhl == rfB_waddr_Whl)
+                         && !SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs11_addr_Dhl][`RISCV_SB_W])
                          && !(rfB_waddr_Whl == 5'd0)
                          && inst_val_Whl;
   // ---------------------------------------------------------------
 
   // pipeline B rs2 ------------------------------------------------
   wire       rs21_AX0_byp_Dhl = rs21_en_Dhl
-                         && rfA_wen_X0hl
-                         && (rs21_addr_Dhl == rfA_waddr_X0hl)
+                         && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X0])
                          && !(rfA_waddr_X0hl == 5'd0)
-                         && inst_val_X0hl && !is_muldiv_X0hl;
+                         && inst_val_X0hl && !is_muldiv_X0hl && !is_load_X0hl;
 
   wire       rs21_AX1_byp_Dhl = rs21_en_Dhl
                          && rfA_wen_X1hl
-                         && (rs21_addr_Dhl == rfA_waddr_X1hl)
+                         && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X1])
                          && !(rfA_waddr_X1hl == 5'd0)
-                         && inst_val_X1hl && !is_muldiv_X1hl;
+                         && inst_val_X1hl && !is_muldiv_X1hl && !is_load_X1hl;
 
   wire       rs21_AX2_byp_Dhl = rs21_en_Dhl
                          && rfA_wen_X2hl
-                         && (rs21_addr_Dhl == rfA_waddr_X2hl)
+                         && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X2])
                          && !(rfA_waddr_X2hl == 5'd0)
                          && inst_val_X2hl && !is_muldiv_X2hl;
 
   wire       rs21_AX3_byp_Dhl = rs21_en_Dhl
                          && rfA_wen_X3hl
-                         && (rs21_addr_Dhl == rfA_waddr_X3hl)
+                         && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X3])
                          && !(rfA_waddr_X3hl == 5'd0)
                          && inst_val_X3hl && !is_muldiv_X3hl;
 
   wire       rs21_AW_byp_Dhl = rs21_en_Dhl
                          && rfA_wen_Whl
-                         && (rs21_addr_Dhl == rfA_waddr_Whl)
+                         && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_W])
                          && !(rfA_waddr_Whl == 5'd0)
                          && inst_val_Whl;
 
   wire       rs21_BX0_byp_Dhl = rs21_en_Dhl
                          && rfB_wen_X0hl
-                         && (rs21_addr_Dhl == rfB_waddr_X0hl)
+                         && !SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X0])
                          && !(rfB_waddr_X0hl == 5'd0)
                          && inst_val_X0hl;
 
   wire       rs21_BX1_byp_Dhl = rs21_en_Dhl
                          && rfB_wen_X1hl
-                         && (rs21_addr_Dhl == rfB_waddr_X1hl)
+                         && !SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X1])
                          && !(rfB_waddr_X1hl == 5'd0)
                          && inst_val_X1hl;
 
   wire       rs21_BX2_byp_Dhl = rs21_en_Dhl
                          && rfB_wen_X2hl
-                         && (rs21_addr_Dhl == rfB_waddr_X2hl)
+                         && !SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X2])
                          && !(rfB_waddr_X2hl == 5'd0)
                          && inst_val_X2hl;
 
   wire       rs21_BX3_byp_Dhl = rs21_en_Dhl
                          && rfB_wen_X3hl
-                         && (rs21_addr_Dhl == rfB_waddr_X3hl)
+                         && !SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_X3])
                          && !(rfB_waddr_X3hl == 5'd0)
                          && inst_val_X3hl;
 
   wire       rs21_BW_byp_Dhl = rs21_en_Dhl
                          && rfB_wen_Whl
-                         && (rs21_addr_Dhl == rfB_waddr_Whl)
+                         && !SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                         && (SB[rs21_addr_Dhl][`RISCV_SB_W])
                          && !(rfB_waddr_Whl == 5'd0)
                          && inst_val_Whl;
   // ---------------------------------------------------------------
@@ -1190,10 +1452,10 @@ module riscv_CoreCtrl
   // Register Writeback Controls
 
   wire rf0_wen_Dhl         = csA[`RISCV_INST_MSG_RF_WEN];
-  wire [4:0] rf0_waddr_Dhl = instA_rd_Dhl;
+  wire [4:0] rf0_waddr_Dhl = csA[`RISCV_INST_MSG_RF_WADDR];
 
   wire rf1_wen_Dhl         = csB[`RISCV_INST_MSG_RF_WEN];
-  wire [4:0] rf1_waddr_Dhl = instB_rd_Dhl;
+  wire [4:0] rf1_waddr_Dhl = csB[`RISCV_INST_MSG_RF_WADDR];
 
   // CSR register write enable
 
@@ -1217,53 +1479,53 @@ module riscv_CoreCtrl
   
   wire stall_0_muldiv_use_Dhl = inst_val_Dhl && (
                               ( inst_val_X0hl && rs10_en_Dhl && rfA_wen_X0hl
-                                && ( rs10_addr_Dhl == rfA_waddr_X0hl )
+                                && ( SB[rs10_addr_Dhl][`RISCV_SB_X0] )
                                 && ( rfA_waddr_X0hl != 5'd0 ) && is_muldiv_X0hl )
                            || ( inst_val_X1hl && rs10_en_Dhl && rfA_wen_X1hl
-                                && ( rs10_addr_Dhl == rfA_waddr_X1hl )
+                                && ( SB[rs10_addr_Dhl][`RISCV_SB_X1] )
                                 && ( rfA_waddr_X1hl != 5'd0 ) && is_muldiv_X1hl )
                            || ( inst_val_X2hl && rs10_en_Dhl && rfA_wen_X2hl
-                                && ( rs10_addr_Dhl == rfA_waddr_X2hl )
+                                && ( SB[rs10_addr_Dhl][`RISCV_SB_X2] )
                                 && ( rfA_waddr_X2hl != 5'd0 ) && is_muldiv_X2hl )
                            || ( inst_val_X3hl && rs10_en_Dhl && rfA_wen_X3hl
-                                && ( rs10_addr_Dhl == rfA_waddr_X3hl )
+                                && ( SB[rs10_addr_Dhl][`RISCV_SB_X3] )
                                 && ( rfA_waddr_X3hl != 5'd0 ) && is_muldiv_X3hl )
                            || ( inst_val_X0hl && rs20_en_Dhl && rfA_wen_X0hl
-                                && ( rs20_addr_Dhl == rfA_waddr_X0hl )
+                                && ( SB[rs20_addr_Dhl][`RISCV_SB_X0] )
                                 && ( rfA_waddr_X0hl != 5'd0 ) && is_muldiv_X0hl )
                            || ( inst_val_X1hl && rs20_en_Dhl && rfA_wen_X1hl
-                                && ( rs20_addr_Dhl == rfA_waddr_X1hl )
+                                && ( SB[rs20_addr_Dhl][`RISCV_SB_X1] )
                                 && ( rfA_waddr_X1hl != 5'd0 ) && is_muldiv_X1hl )
                            || ( inst_val_X2hl && rs20_en_Dhl && rfA_wen_X2hl
-                                && ( rs20_addr_Dhl == rfA_waddr_X2hl )
+                                && ( SB[rs20_addr_Dhl][`RISCV_SB_X2] )
                                 && ( rfA_waddr_X2hl != 5'd0 ) && is_muldiv_X2hl )
                            || ( inst_val_X3hl && rs20_en_Dhl && rfA_wen_X3hl
-                                && ( rs20_addr_Dhl == rfA_waddr_X3hl )
+                                && ( SB[rs20_addr_Dhl][`RISCV_SB_X3] )
                                 && ( rfA_waddr_X3hl != 5'd0 ) && is_muldiv_X3hl ));
   wire stall_1_muldiv_use_Dhl = inst_val_Dhl && (
                               ( inst_val_X0hl && rs11_en_Dhl && rfA_wen_X0hl
-                                && ( rs11_addr_Dhl == rfA_waddr_X0hl )
+                                && ( SB[rs11_addr_Dhl][`RISCV_SB_X0] )
                                 && ( rfA_waddr_X0hl != 5'd0 ) && is_muldiv_X0hl )
                            || ( inst_val_X1hl && rs11_en_Dhl && rfA_wen_X1hl
-                                && ( rs11_addr_Dhl == rfA_waddr_X1hl )
+                                && ( SB[rs11_addr_Dhl][`RISCV_SB_X1] )
                                 && ( rfA_waddr_X1hl != 5'd0 ) && is_muldiv_X1hl )
                            || ( inst_val_X2hl && rs11_en_Dhl && rfA_wen_X2hl
-                                && ( rs11_addr_Dhl == rfA_waddr_X2hl )
+                                && ( SB[rs11_addr_Dhl][`RISCV_SB_X2] )
                                 && ( rfA_waddr_X2hl != 5'd0 ) && is_muldiv_X2hl )
                            || ( inst_val_X3hl && rs11_en_Dhl && rfA_wen_X3hl
-                                && ( rs11_addr_Dhl == rfA_waddr_X3hl )
+                                && ( SB[rs11_addr_Dhl][`RISCV_SB_X3] )
                                 && ( rfA_waddr_X3hl != 5'd0 ) && is_muldiv_X3hl )
                            || ( inst_val_X0hl && rs21_en_Dhl && rfA_wen_X0hl
-                                && ( rs21_addr_Dhl == rfA_waddr_X0hl )
+                                && ( SB[rs21_addr_Dhl][`RISCV_SB_X0] )
                                 && ( rfA_waddr_X0hl != 5'd0 ) && is_muldiv_X0hl )
                            || ( inst_val_X1hl && rs21_en_Dhl && rfA_wen_X1hl
-                                && ( rs21_addr_Dhl == rfA_waddr_X1hl )
+                                && ( SB[rs21_addr_Dhl][`RISCV_SB_X1] )
                                 && ( rfA_waddr_X1hl != 5'd0 ) && is_muldiv_X1hl )
                            || ( inst_val_X2hl && rs21_en_Dhl && rfA_wen_X2hl
-                                && ( rs21_addr_Dhl == rfA_waddr_X2hl )
+                                && ( SB[rs21_addr_Dhl][`RISCV_SB_X2] )
                                 && ( rfA_waddr_X2hl != 5'd0 ) && is_muldiv_X2hl )
                            || ( inst_val_X3hl && rs21_en_Dhl && rfA_wen_X3hl
-                                && ( rs21_addr_Dhl == rfA_waddr_X3hl )
+                                && ( SB[rs21_addr_Dhl][`RISCV_SB_X3] )
                                 && ( rfA_waddr_X3hl != 5'd0 ) && is_muldiv_X3hl ));
 
   // Stall for load-use only if instruction in D is valid and either of
@@ -1272,30 +1534,38 @@ module riscv_CoreCtrl
 
   wire stall_0_load_use_Dhl = inst_val_Dhl && (
                             ( inst_val_X0hl && rs10_en_Dhl && rfA_wen_X0hl
-                              && ( rs10_addr_Dhl == rfA_waddr_X0hl )
+                              && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs10_addr_Dhl][`RISCV_SB_X0] )
                               && ( rfA_waddr_X0hl != 5'd0 ) && is_load_X0hl )
                          || ( inst_val_X1hl && rs10_en_Dhl && rfA_wen_X1hl
-                              && ( rs10_addr_Dhl == rfA_waddr_X1hl )
+                              && SB[rs10_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs10_addr_Dhl][`RISCV_SB_X1] )
                               && ( rfA_waddr_X1hl != 5'd0 ) && is_load_X1hl )
                          || ( inst_val_X0hl && rs20_en_Dhl && rfA_wen_X0hl
-                              && ( rs20_addr_Dhl == rfA_waddr_X0hl )
+                              && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs20_addr_Dhl][`RISCV_SB_X0] )
                               && ( rfA_waddr_X0hl != 5'd0 ) && is_load_X0hl )
                          || ( inst_val_X1hl && rs20_en_Dhl && rfA_wen_X1hl
-                              && ( rs20_addr_Dhl == rfA_waddr_X1hl )
+                              && SB[rs20_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs20_addr_Dhl][`RISCV_SB_X1] )
                               && ( rfA_waddr_X1hl != 5'd0 ) && is_load_X1hl ) );
 
   wire stall_1_load_use_Dhl = inst_val_Dhl && (
                             ( inst_val_X0hl && rs11_en_Dhl && rfA_wen_X0hl
-                              && ( rs11_addr_Dhl == rfA_waddr_X0hl )
+                              && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs11_addr_Dhl][`RISCV_SB_X0] )
                               && ( rfA_waddr_X0hl != 5'd0 ) && is_load_X0hl )
                          || ( inst_val_X1hl && rs11_en_Dhl && rfA_wen_X1hl
-                              && ( rs11_addr_Dhl == rfA_waddr_X1hl )
+                              && SB[rs11_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs11_addr_Dhl][`RISCV_SB_X1] )
                               && ( rfA_waddr_X1hl != 5'd0 ) && is_load_X1hl )
                          || ( inst_val_X0hl && rs21_en_Dhl && rfA_wen_X0hl
-                              && ( rs21_addr_Dhl == rfA_waddr_X0hl )
+                              && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs21_addr_Dhl][`RISCV_SB_X0] )
                               && ( rfA_waddr_X0hl != 5'd0 ) && is_load_X0hl )
                          || ( inst_val_X1hl && rs21_en_Dhl && rfA_wen_X1hl
-                              && ( rs21_addr_Dhl == rfA_waddr_X1hl )
+                              && SB[rs21_addr_Dhl][`RISCV_SB_FUNC_UNIT]
+                              && ( SB[rs21_addr_Dhl][`RISCV_SB_X1] )
                               && ( rfA_waddr_X1hl != 5'd0 ) && is_load_X1hl ) );
 
   /*
@@ -1336,7 +1606,7 @@ module riscv_CoreCtrl
                         && ( inst0_rd_Dhl != 5'd0 )
                         && ( inst1_rd_Dhl != 5'd0 ) );
 
-  wire [1:0] stall_B_state = ( !data_hazard_A && !data_hazard_B && steering_state == 2'd3 ) ? 2'd1
+  wire [1:0] stall_B_state = ( !data_hazard_A && !data_hazard_B && ( steering_state == 2'd3 || ( is_inst0_br && steering_state == 2'd2 && next_inst == 2'b0 ) || ( is_inst1_br && steering_state == 2'd1 && next_inst == 2'b0 ) ) ) ? 2'd1
                            : ( data_hazard_B || write_after_write )                         ? 2'd2
                            : ( data_hazard_A )                                              ? 2'd3
                            :                                                                  2'd0;
@@ -1384,6 +1654,10 @@ module riscv_CoreCtrl
   reg [1:0]  steering_state_reg;
 
   reg        bubble_X0hl;
+  reg        last_func_unit;
+  reg        last_pending;
+
+  integer    i_X0;
 
   // Pipeline Controls
 
@@ -1408,30 +1682,45 @@ module riscv_CoreCtrl
       dmemreq_val_X0hl      <= dmemreq_val_Dhl;
       dmemresp_mux_sel_X0hl <= dmemresp_mux_sel_Dhl;
       memex_mux_sel_X0hl    <= memex_mux_sel_Dhl;
+      csr_wen_X0hl          <= csr_wen_Dhl;
+      csr_addr_X0hl         <= csr_addr_Dhl;
+      steering_state_reg    <= steering_state;
       rf0_wen_X0hl          <= rf0_wen_Dhl;
       rf0_waddr_X0hl        <= rf0_waddr_Dhl;
       rf1_wen_X0hl          <= rf1_wen_Dhl;
       rf1_waddr_X0hl        <= rf1_waddr_Dhl;
-      csr_wen_X0hl         <= csr_wen_Dhl;
-      csr_addr_X0hl        <= csr_addr_Dhl;
-      steering_state_reg   <= steering_state;
+
+      for (i_X0 = 0; i_X0 < 32; i_X0 = i_X0 + 1) begin
+        SB[i_X0][`RISCV_SB_X0] <= 0;
+      end
+
+      if (rf1_waddr_Dhl != 0 && inst_val_Dhl && !stall_0_Dhl && !stall_1_Dhl ) begin
+        SB[rf1_waddr_Dhl][`RISCV_SB_PENDING]    <= 1;
+        SB[rf1_waddr_Dhl][`RISCV_SB_FUNC_UNIT]  <= 0;
+        SB[rf1_waddr_Dhl][`RISCV_SB_X0]         <= 1;
+      end
+      if (rf0_waddr_Dhl != 0 && inst_val_Dhl && !stall_0_Dhl && !stall_1_Dhl ) begin
+        SB[rf0_waddr_Dhl][`RISCV_SB_PENDING]    <= 1;
+        SB[rf0_waddr_Dhl][`RISCV_SB_FUNC_UNIT]  <= 1;
+        SB[rf0_waddr_Dhl][`RISCV_SB_X0]         <= 1;
+      end
 
       bubble_X0hl           <= bubble_next_Dhl;
     end
-
   end
 
   assign aluA_fn_X0hl = alu0_fn_X0hl;
   assign aluB_fn_X0hl = alu1_fn_X0hl;
 
   wire rfA_wen_X0hl = rf0_wen_X0hl;
-  wire rfB_wen_X0hl = rf1_wen_X0hl && !( brj_taken_X0hl && steering_state_reg == 2'd2);
+  wire rfB_wen_X0hl = rf1_wen_X0hl;
 
   wire [4:0] rfA_waddr_X0hl = rf0_waddr_X0hl;
-  wire [4:0] rfB_waddr_X0hl = !( brj_taken_X0hl && steering_state_reg == 2'd2) ? rf1_waddr_X0hl : 4'd0;
+  wire [4:0] rfB_waddr_X0hl = rf1_waddr_X0hl;
 
   wire [31:0] irA_X0hl = ir0_X0hl;
-  wire [31:0] irB_X0hl = !( brj_taken_X0hl && steering_state_reg == 2'd2) ? ir1_X0hl : inst_nop;
+  wire [31:0] irB_X0hl = ir1_X0hl;
+
 
   //----------------------------------------------------------------------
   // Execute Stage
@@ -1521,6 +1810,8 @@ module riscv_CoreCtrl
 
   reg        bubble_X1hl;
 
+  integer    i_X1;
+
   // Pipeline Controls
 
   always @ ( posedge clk ) begin
@@ -1545,6 +1836,12 @@ module riscv_CoreCtrl
       rf1_waddr_X1hl        <= rfB_waddr_X0hl;
       csr_wen_X1hl         <= csr_wen_X0hl;
       csr_addr_X1hl        <= csr_addr_X0hl;
+
+      if ( !brj_taken_X0hl ) begin
+        for (i_X1 = 0; i_X1 < 32; i_X1 = i_X1 + 1) begin
+          SB[i_X1][`RISCV_SB_X1] <= SB[i_X1][`RISCV_SB_X0];
+        end
+      end
 
       bubble_X1hl           <= bubble_next_X0hl;
     end
@@ -1615,6 +1912,8 @@ module riscv_CoreCtrl
 
   reg        bubble_X2hl;
 
+  integer i_X2;
+
   // Pipeline Controls
 
   always @ ( posedge clk ) begin
@@ -1633,6 +1932,10 @@ module riscv_CoreCtrl
       csr_wen_X2hl         <= csr_wen_X1hl;
       csr_addr_X2hl        <= csr_addr_X1hl;
       execute_mux_sel_X2hl  <= execute_mux_sel_X1hl;
+
+      for (i_X2 = 0; i_X2 < 32; i_X2 = i_X2 + 1) begin
+        SB[i_X2][`RISCV_SB_X2] <= SB[i_X2][`RISCV_SB_X1];
+      end
 
       bubble_X2hl           <= bubble_next_X1hl;
     end
@@ -1689,6 +1992,8 @@ module riscv_CoreCtrl
 
   reg        bubble_X3hl;
 
+  integer    i_X3;
+
   // Pipeline Controls
 
   always @ ( posedge clk ) begin
@@ -1704,9 +2009,13 @@ module riscv_CoreCtrl
       rf0_waddr_X3hl        <= rf0_waddr_X2hl;
       rf1_wen_X3hl          <= rf1_wen_X2hl;
       rf1_waddr_X3hl        <= rf1_waddr_X2hl;
-      csr_wen_X3hl         <= csr_wen_X2hl;
-      csr_addr_X3hl        <= csr_addr_X2hl;
+      csr_wen_X3hl          <= csr_wen_X2hl;
+      csr_addr_X3hl         <= csr_addr_X2hl;
       execute_mux_sel_X3hl  <= execute_mux_sel_X2hl;
+
+      for (i_X3 = 0; i_X3 < 32; i_X3 = i_X3 + 1) begin
+        SB[i_X3][`RISCV_SB_X3] <= SB[i_X3][`RISCV_SB_X2];
+      end
 
       bubble_X3hl           <= bubble_next_X2hl;
     end
@@ -1759,6 +2068,8 @@ module riscv_CoreCtrl
 
   reg        bubble_Whl;
 
+  integer    i_W;
+
   // Pipeline Controls
 
   always @ ( posedge clk ) begin
@@ -1774,6 +2085,10 @@ module riscv_CoreCtrl
       rf1_waddr_Whl    <= rf1_waddr_X3hl;
       csr_wen_Whl     <= csr_wen_X3hl;
       csr_addr_Whl    <= csr_addr_X3hl;
+
+      for (i_W = 0; i_W < 32; i_W = i_W + 1) begin
+        SB[i_W][`RISCV_SB_W] <= SB[i_W][`RISCV_SB_X3];
+      end
 
       bubble_Whl       <= bubble_next_X3hl;
     end
@@ -1813,11 +2128,26 @@ module riscv_CoreCtrl
   reg [31:0] irA_debug;
   reg [31:0] irB_debug;
   reg        inst_val_debug;
+  reg        rf0_wen_debug;
+  reg  [4:0] rf0_waddr_debug;
+  reg        rf1_wen_debug;
+  reg  [4:0] rf1_waddr_debug;
+
+  integer    i_debug;
 
   always @ ( posedge clk ) begin
-    irA_debug       <= irA_Whl;
-    inst_val_debug  <= inst_val_Whl;
-    irB_debug       <= irB_Whl;
+    irA_debug          <= irA_Whl;
+    inst_val_debug     <= inst_val_Whl;
+    irB_debug          <= irB_Whl;
+
+    rf0_wen_debug      <= rf0_wen_Whl;
+    rf0_waddr_debug    <= rf0_waddr_Whl;
+    rf1_wen_debug      <= rf1_wen_Whl;
+    rf1_waddr_debug    <= rf1_waddr_Whl;
+
+    for (i_debug = 0; i_debug < 32; i_debug = i_debug + 1) begin
+      SB[i_debug][`RISCV_SB_PENDING] <= SB[i_debug][`RISCV_SB_X0] || SB[i_debug][`RISCV_SB_X1] || SB[i_debug][`RISCV_SB_X2] || SB[i_debug][`RISCV_SB_X3];
+    end
   end
 
   //----------------------------------------------------------------------
