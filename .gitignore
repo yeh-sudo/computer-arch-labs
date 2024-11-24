@@ -1,6 +1,7 @@
 313551008*
 *.tar.gz
 *.docx
+*.drawio
 
 *.out
 *-sim
