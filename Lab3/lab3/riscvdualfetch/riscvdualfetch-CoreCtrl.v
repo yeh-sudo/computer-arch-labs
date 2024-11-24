@@ -1984,7 +1984,7 @@ module riscv_CoreCtrl
         // Count instructions for every cycle not squashed or stalled
 
         if ( inst_val_Dhl && !( stall_Dhl && stall_B_state == 3'd0 ) ) begin
-          num_inst = num_inst + 2;
+          num_inst = num_inst + 1;
         end
 
       end
