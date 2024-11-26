@@ -284,6 +284,22 @@ _xcpthandler:                                                           \
     inst_ x4, offset_(x2);                                              \
     TEST_CHECK_EQ( x4, result_ );                                       \
 
+#define TEST_LD_OP_WAW( inst_, offset_, base_, result_ )                \
+    la    x2, base_;                                                    \
+    inst_ x4, offset_(x2);                                              \
+    inst_ x5, offset_(x2);                                              \
+    inst_ x6, offset_(x2);                                              \
+    TEST_CHECK_EQ( x4, result_ );                                       \
+    TEST_CHECK_EQ( x5, result_ );                                       \
+    TEST_CHECK_EQ( x6, result_ );                                       \
+
+#define TEST_WAW( inst_, src0_, src1_, result_ )                        \
+    li    x2, src0_;                                                    \
+    li    x3, src1_;                                                    \
+    mul   x4, x2, x2;                                                   \
+    inst_ x4, x3, x3;                                                   \
+    TEST_CHECK_EQ( x4, result_ );                                       \
+
 #define TEST_LD_DEST_BYP( nops_, inst_, offset_, base_, result_ )       \
     la    x2, base_;                                                    \
     inst_ x4, offset_(x2);                                              \
